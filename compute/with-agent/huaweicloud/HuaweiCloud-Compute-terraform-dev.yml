@@ -420,5 +420,5 @@ deployment:
         isServiceInterrupted: true
   scriptsRepo:
     repoUrl: https://github.com/swaroopar/xpanse-samples
-    branch: feature/addAgentSample
+    branch: main
     scriptsPath: compute/with-agent/huaweicloud/terraform

@@ -1,6 +1,6 @@
 variable "region" {
   type        = string
-  description = "The region to deploy the compute instance."
+  description = "The region to deploy the Kafka cluster instance."
 }
 
 variable "service_id" {
@@ -21,43 +21,43 @@ variable "xpanse_api_endpoint" {
 variable "availability_zone" {
   type        = string
   default     = ""
-  description = "The availability zone to deploy the compute instance."
+  description = "The availability zone to deploy the Kafka cluster instance."
 }
 
 variable "flavor_id" {
   type        = string
   default     = "s6.large.2"
-  description = "The flavor_id of the compute instance."
+  description = "The flavor_id of all nodes in the Kafka cluster instance."
 }
 
-variable "image_name" {
+variable "worker_nodes_count" {
   type        = string
-  default     = "Ubuntu 22.04 server 64bit"
-  description = "The image name of the compute instance."
+  default     = 3
+  description = "The worker nodes count in the Kafka cluster instance."
 }
 
 variable "admin_passwd" {
   type        = string
   default     = ""
-  description = "The root password of the compute instance."
+  description = "The root password of all nodes in the Kafka cluster instance."
 }
 
 variable "vpc_name" {
   type        = string
-  default     = "ecs-vpc-default"
-  description = "The vpc name of the compute instance."
+  default     = "kafka-vpc-default"
+  description = "The vpc name of all nodes in the Kafka cluster instance."
 }
 
 variable "subnet_name" {
   type        = string
-  default     = "ecs-subnet-default"
-  description = "The subnet name of the compute instance."
+  default     = "kafka-subnet-default"
+  description = "The subnet name of all nodes in the Kafka cluster instance."
 }
 
 variable "secgroup_name" {
   type        = string
-  default     = "ecs-secgroup-default"
-  description = "The security group name of the compute instance."
+  default     = "kafka-secgroup-default"
+  description = "The security group name of all nodes in the Kafka cluster instance."
 }
 
 terraform {
@@ -102,12 +102,41 @@ resource "huaweicloud_vpc" "new" {
   cidr  = "192.168.0.0/16"
 }
 
+resource "huaweicloud_vpc_eip" "nat_eip" {
+  count = length(data.huaweicloud_vpcs.existing.vpcs) == 0 ? 1 : 0
+  publicip {
+    type = "5_bgp"
+  }
+  bandwidth {
+    name       = "test"
+    size       = 5
+    share_type = "PER"
+    charge_mode = "traffic"
+  }
+}
+
 resource "huaweicloud_vpc_subnet" "new" {
   count      = length(data.huaweicloud_vpcs.existing.vpcs) == 0 ? 1 : 0
   vpc_id     = local.vpc_id
   name       = var.subnet_name
   cidr       = "192.168.10.0/24"
   gateway_ip = "192.168.10.1"
+}
+
+resource "huaweicloud_nat_gateway" "kafka_nat_gateway" {
+  count      = length(data.huaweicloud_vpcs.existing.vpcs) == 0 ? 1 : 0
+  name        = "nat-gateway-basic"
+  description = "test for terraform examples"
+  spec        = "1"  # Specify NAT Gateway type (1-4)
+  vpc_id      = local.vpc_id
+  subnet_id   = local.subnet_id
+}
+
+resource "huaweicloud_nat_snat_rule" "snat-rule" {
+  count      = length(data.huaweicloud_vpcs.existing.vpcs) == 0 ? 1 : 0
+  floating_ip_id  = huaweicloud_vpc_eip.nat_eip[count.index].id
+  nat_gateway_id  = huaweicloud_nat_gateway.kafka_nat_gateway[count.index].id
+  subnet_id      = local.subnet_id
 }
 
 resource "huaweicloud_networking_secgroup" "new" {
@@ -132,8 +161,8 @@ resource "huaweicloud_networking_secgroup_rule" "secgroup_rule_1" {
   direction         = "ingress"
   ethertype         = "IPv4"
   protocol          = "tcp"
-  port_range_min    = 8080
-  port_range_max    = 8088
+  port_range_min    = 2181
+  port_range_max    = 2181
   remote_ip_prefix  = "121.37.117.211/32"
   security_group_id = local.secgroup_id
 }
@@ -143,8 +172,8 @@ resource "huaweicloud_networking_secgroup_rule" "secgroup_rule_2" {
   direction         = "ingress"
   ethertype         = "IPv4"
   protocol          = "tcp"
-  port_range_min    = 9090
-  port_range_max    = 9099
+  port_range_min    = 9092
+  port_range_max    = 9093
   remote_ip_prefix  = "121.37.117.211/32"
   security_group_id = local.secgroup_id
 }
@@ -163,25 +192,30 @@ resource "random_password" "password" {
   override_special = "#%@"
 }
 
+resource "huaweicloud_kps_keypair" "keypair" {
+  name     = "keypair-kafka-${random_id.new.hex}"
+  key_file = "keypair-kafka-${random_id.new.hex}.pem"
+}
+
 data "huaweicloud_images_image" "image" {
-  name                  = var.image_name
+  name                  = "Ubuntu 22.04 server 64bit"
   most_recent           = true
   enterprise_project_id = "0"
 }
 
-resource "huaweicloud_compute_instance" "ecs-tf" {
+resource "huaweicloud_compute_instance" "zookeeper" {
   availability_zone = local.availability_zone
-  name              = "ecs-tf-${local.resource_random_id}"
+  name              = "kafka-zookeeper-${local.resource_random_id}"
   flavor_id         = var.flavor_id
   security_group_ids = [local.secgroup_id]
   image_id          = data.huaweicloud_images_image.image.id
-  admin_pass        = local.admin_passwd
+  key_pair          = huaweicloud_kps_keypair.keypair.name
   network {
     uuid = local.subnet_id
   }
-  user_data = templatefile("create-agent-service-wrapper.sh", {
+  user_data = templatefile("user-data-script-zookeeper.sh", {
     serviceId         = var.service_id,
-    resourceName      = "ecs-tf-${local.resource_random_id}",
+    resourceName      = "kafka-zookeeper-${local.resource_random_id}",
     pollingInterval   = 20,
     xpanseApiEndpoint = var.xpanse_api_endpoint,
     agentVersion      = var.agent_version,
@@ -189,46 +223,34 @@ resource "huaweicloud_compute_instance" "ecs-tf" {
   })
 }
 
-resource "huaweicloud_evs_volume" "volume" {
-  name              = "volume-tf-${random_id.new.hex}"
-  description       = "my volume"
-  volume_type       = "SSD"
-  size              = 40
+resource "huaweicloud_compute_instance" "kafka-broker" {
+  count             = var.worker_nodes_count
   availability_zone = local.availability_zone
-  tags = {
-    foo = "bar"
-    key = "value"
+  name              = "kafka-broker-${local.resource_random_id}-${count.index}"
+  flavor_id         = var.flavor_id
+  security_group_ids = [local.secgroup_id]
+  image_id          = data.huaweicloud_images_image.image.id
+  key_pair          = huaweicloud_kps_keypair.keypair.name
+  network {
+    uuid = local.subnet_id
   }
+  user_data = templatefile("user-data-script-kafka-broker.sh", {
+    serviceId         = var.service_id,
+    resourceName      = "kafka-broker-${local.resource_random_id}-${count.index}",
+    pollingInterval   = 20,
+    xpanseApiEndpoint = var.xpanse_api_endpoint,
+    agentVersion      = var.agent_version,
+    admin_passwd      = local.admin_passwd
+    zookeeperIp       = huaweicloud_compute_instance.zookeeper.access_ip_v4
+    brokerId          = count.index
+  })
+  depends_on = [
+    huaweicloud_compute_instance.zookeeper
+  ]
 }
 
-resource "huaweicloud_compute_volume_attach" "attached" {
-  instance_id = huaweicloud_compute_instance.ecs-tf.id
-  volume_id   = huaweicloud_evs_volume.volume.id
-}
-
-resource "huaweicloud_vpc_eip" "eip-tf" {
-  publicip {
-    type = var.region == "eu-west-101" ? "5_bgp" : "5_sbgp"
-  }
-  bandwidth {
-    name        = "eip-tf-${random_id.new.hex}"
-    size        = 5
-    share_type  = "PER"
-    charge_mode = "traffic"
-  }
-}
-
-resource "huaweicloud_compute_eip_associate" "associated" {
-  public_ip   = huaweicloud_vpc_eip.eip-tf.address
-  instance_id = huaweicloud_compute_instance.ecs-tf.id
-}
-
-output "ecs-host" {
-  value = huaweicloud_compute_instance.ecs-tf.access_ip_v4
-}
-
-output "ecs-public-ip" {
-  value = huaweicloud_vpc_eip.eip-tf.address
+output "zookeeper_server" {
+  value = "${huaweicloud_compute_instance.zookeeper.access_ip_v4}:2181"
 }
 
 output "admin_passwd" {

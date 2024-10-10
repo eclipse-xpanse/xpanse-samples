@@ -90,7 +90,7 @@ serviceConfigurationManage:
         # Path to activate virtualenv
         virtualEnv: ""
         # Version of the python
-        pythonVersion: "3.11"
+        pythonVersion: "3.10"
         repoUrl: https://github.com/eclipse-xpanse/xpanse-samples
         branch: main
         # Full path of the requirements file in GIT repo.
@@ -108,7 +108,7 @@ serviceConfigurationManage:
         # Path to activate virtualenv
         virtualEnv: ""
         # Version of the python
-        pythonVersion: "3.11"
+        pythonVersion: "3.10"
         repoUrl: https://github.com/eclipse-xpanse/xpanse-samples
         branch: main
         # Full path of the requirements file in GIT repo.
