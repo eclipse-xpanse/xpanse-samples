@@ -7,7 +7,7 @@ name: kafka-cluster
 # The version of the service, the end-user can select the version they want to deploy.
 serviceVersion: 1.0.0
 # For the users may have more than one service, the @namespace can be used to separate the clusters.
-description: This is an ehanced Kafka cluster services by ISV-A.
+description: This is an enhanced Kafka cluster services by ISV-A.
 namespace: ISV-A
 # Icon for the service.
 icon: |
@@ -17,9 +17,6 @@ cloudServiceProvider:
   name: RegioCloud
   regions:
     - name: RegionA
-      site: default
-      area: Western Europe
-    - name: RegionTwo
       site: default
       area: Western Europe
 billing:
@@ -45,7 +42,7 @@ flavors:
       # Properties for the service, which can be used by the deployment.
       properties:
         worker_nodes_count: 3
-        flavor_name: SCS-4V:8:20
+        flavor_name: SCS-4V-8-20
         image_name: Ubuntu 20.04
       features:
         - High Availability
@@ -65,7 +62,7 @@ flavors:
       # Properties for the service, which can be used by the deployment.
       properties:
         worker_nodes_count: 3
-        flavor_name: SCS-4V:8:20
+        flavor_name: SCS-4V-8-20
         image_name: Ubuntu 20.04
       features:
         - High Availability
@@ -220,7 +217,7 @@ deployment:
         minLength: 1
         maxLength: 256
       sensitiveScope: none
-      value: "https://keystone.services.a.regiocloud.tech"
+      value: "https://keystone.services.a.regiocloud.tech/v3"
       modificationImpact:
         isDataLost: true
         isServiceInterrupted: true

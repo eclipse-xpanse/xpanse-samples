@@ -16,10 +16,7 @@ icon: |
 cloudServiceProvider:
   name: RegioCloud
   regions:
-    - name: RegionOne
-      site: default
-      area: Western Europe
-    - name: RegionTwo
+    - name: RegionA
       site: default
       area: Western Europe
 billing:
@@ -65,7 +62,7 @@ flavors:
         isPriceOnlyForManagementLayer: false
       # Properties for the service, which can be used by the deployment.
       properties:
-        flavor_name: SCS-4V:8:20
+        flavor_name: SCS-4V-8-20
       features:
         - High Availability
         - Maximum Performance
@@ -109,7 +106,7 @@ deployment:
         isDataLost: false
         isServiceInterrupted: true
       # this is an example test instance of openstack
-      value: "http://119.8.215.244/identity/v3"
+      value: "https://keystone.services.a.regiocloud.tech/v3"
     - name: admin_passwd
       description: The admin password of the compute instance. If the value is empty, will create a random password.
       kind: variable
