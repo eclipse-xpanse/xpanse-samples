@@ -95,273 +95,274 @@ deployment:
   # - env_env: Value to this variable is read by runtime (it can read from other sources, e.g., OS env variables) and injected as an environment variable to the deployment scripts. End user cannot see or change this variable.
   # - env_variable: Value to this variable is read by runtime (it can read from other sources, e.g., OS env variables) and injected as a regular variable to the deployment scripts. End user cannot see or change this variable.
   # The parameters will be used to generate the API of the managed service.
-  inputVariables:
-    - name: OS_AUTH_URL
-      description: Openstack cloud instance to be used.
-      kind: fix_env
-      dataType: string
-      mandatory: true
-      valueSchema:
-        minLength: 1
-        maxLength: 256
-      sensitiveScope: none
-      modificationImpact:
-        isDataLost: false
-        isServiceInterrupted: true
-      # this is an example test instance of openstack
-      value: "http://119.8.215.244/identity/v3"
-    - name: admin_passwd
-      description: The admin password of the compute instance. If the value is empty, will create a random password.
-      kind: variable
-      dataType: string
-      mandatory: false
-      sensitiveScope: always
-      valueSchema:
-        minLength: 8
-        maxLength: 16
-        pattern: ^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,16}$
-      modificationImpact:
-        isDataLost: false
-        isServiceInterrupted: true
-    - name: image_name
-      description: The image name of the compute instance. If the value is empty, will use the default value to create compute instance.
-      kind: variable
-      dataType: string
-      example: "Ubuntu 20.04"
-      mandatory: false
-      value: "Ubuntu 20.04"
-      modificationImpact:
-        isDataLost: false
-        isServiceInterrupted: true
-    - name: vpc_name
-      description: The vpc name of the compute instance. If the value is empty, will use the default value to find or create VPC.
-      kind: variable
-      dataType: string
-      example: "ecs-vpc-default"
-      mandatory: false
-      value: "ecs-vpc-default"
-      modificationImpact:
-        isDataLost: false
-        isServiceInterrupted: true
-    - name: subnet_name
-      description: The sub network name of the compute instance. If the value is empty, will use the default value to find or create subnet.
-      kind: variable
-      dataType: string
-      example: "ecs-subnet-default"
-      mandatory: false
-      value: "ecs-subnet-default"
-      modificationImpact:
-        isDataLost: false
-        isServiceInterrupted: true
-    - name: secgroup_name
-      description: The security group name of the compute instance. If the value is empty, will use the default value to find or create security group.
-      kind: variable
-      dataType: string
-      example: "ecs-secgroup-default"
-      mandatory: false
-      value: "ecs-secgroup-default"
-      modificationImpact:
-        isDataLost: false
-        isServiceInterrupted: true
-  outputVariables:
-    - name: admin_passwd
-      description: The admin password of the compute instance.
-      dataType: string
-      sensitiveScope: always
-    - name: ecs_host
-      description: The host of the compute instance.
-      dataType: string
-      sensitiveScope: none
-  scriptFiles:
-    # The key is the name of the script, the value is the content of the script.
-    variables.tf: |
-      variable "region" {
-        type        = string
-        description = "The region to deploy the compute instance."
-      }
-      
-      variable "availability_zone" {
-        type        = string
-        default     = ""
-        description = "The availability zone to deploy the compute instance."
-      }
-      
-      variable "flavor_name" {
-        type        = string
-        default     = "cirros256"
-        description = "The flavor_name of the compute instance."
-      }
-      
-      variable "image_name" {
-        type        = string
-        default     = "Ubuntu 20.04"
-        description = "The image name of the compute instance."
-      }
-      
-      variable "admin_passwd" {
-        type        = string
-        default     = ""
-        description = "The root password of the compute instance."
-      }
-  
-      variable "vpc_name" {
-        type        = string
-        default     = "ecs-vpc-default"
-        description = "The vpc name of the compute instance."
-      }
-      
-      variable "subnet_name" {
-        type        = string
-        default     = "ecs-subnet-default"
-        description = "The subnet name of the compute instance."
-      }
-  
-      variable "secgroup_name" {
-        type        = string
-        default     = "ecs-secgroup-default"
-        description = "The security group name of the compute instance."
-      }
+  terraformDeployment:
+    inputVariables:
+      - name: OS_AUTH_URL
+        description: Openstack cloud instance to be used.
+        kind: fix_env
+        dataType: string
+        mandatory: true
+        valueSchema:
+          minLength: 1
+          maxLength: 256
+        sensitiveScope: none
+        modificationImpact:
+          isDataLost: false
+          isServiceInterrupted: true
+        # this is an example test instance of openstack
+        value: "http://119.8.215.244/identity/v3"
+      - name: admin_passwd
+        description: The admin password of the compute instance. If the value is empty, will create a random password.
+        kind: variable
+        dataType: string
+        mandatory: false
+        sensitiveScope: always
+        valueSchema:
+          minLength: 8
+          maxLength: 16
+          pattern: ^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,16}$
+        modificationImpact:
+          isDataLost: false
+          isServiceInterrupted: true
+      - name: image_name
+        description: The image name of the compute instance. If the value is empty, will use the default value to create compute instance.
+        kind: variable
+        dataType: string
+        example: "Ubuntu 20.04"
+        mandatory: false
+        value: "Ubuntu 20.04"
+        modificationImpact:
+          isDataLost: false
+          isServiceInterrupted: true
+      - name: vpc_name
+        description: The vpc name of the compute instance. If the value is empty, will use the default value to find or create VPC.
+        kind: variable
+        dataType: string
+        example: "ecs-vpc-default"
+        mandatory: false
+        value: "ecs-vpc-default"
+        modificationImpact:
+          isDataLost: false
+          isServiceInterrupted: true
+      - name: subnet_name
+        description: The sub network name of the compute instance. If the value is empty, will use the default value to find or create subnet.
+        kind: variable
+        dataType: string
+        example: "ecs-subnet-default"
+        mandatory: false
+        value: "ecs-subnet-default"
+        modificationImpact:
+          isDataLost: false
+          isServiceInterrupted: true
+      - name: secgroup_name
+        description: The security group name of the compute instance. If the value is empty, will use the default value to find or create security group.
+        kind: variable
+        dataType: string
+        example: "ecs-secgroup-default"
+        mandatory: false
+        value: "ecs-secgroup-default"
+        modificationImpact:
+          isDataLost: false
+          isServiceInterrupted: true
+    outputVariables:
+      - name: admin_passwd
+        description: The admin password of the compute instance.
+        dataType: string
+        sensitiveScope: always
+      - name: ecs_host
+        description: The host of the compute instance.
+        dataType: string
+        sensitiveScope: none
+    scriptFiles:
+      # The key is the name of the script, the value is the content of the script.
+      variables.tf: |
+        variable "region" {
+          type        = string
+          description = "The region to deploy the compute instance."
+        }
+        
+        variable "availability_zone" {
+          type        = string
+          default     = ""
+          description = "The availability zone to deploy the compute instance."
+        }
+        
+        variable "flavor_name" {
+          type        = string
+          default     = "cirros256"
+          description = "The flavor_name of the compute instance."
+        }
+        
+        variable "image_name" {
+          type        = string
+          default     = "Ubuntu 20.04"
+          description = "The image name of the compute instance."
+        }
+        
+        variable "admin_passwd" {
+          type        = string
+          default     = ""
+          description = "The root password of the compute instance."
+        }
+    
+        variable "vpc_name" {
+          type        = string
+          default     = "ecs-vpc-default"
+          description = "The vpc name of the compute instance."
+        }
+        
+        variable "subnet_name" {
+          type        = string
+          default     = "ecs-subnet-default"
+          description = "The subnet name of the compute instance."
+        }
+    
+        variable "secgroup_name" {
+          type        = string
+          default     = "ecs-secgroup-default"
+          description = "The security group name of the compute instance."
+        }
 
-    provider.tf: |
-      terraform {
-        required_providers {
-          openstack = {
-            source  = "terraform-provider-openstack/openstack"
-            version = "~> 1.53.0"
+      provider.tf: |
+        terraform {
+          required_providers {
+            openstack = {
+              source  = "terraform-provider-openstack/openstack"
+              version = "~> 1.53.0"
+            }
           }
         }
-      }
-      
-      provider "openstack" {
-        region = var.region
-      }
-
-    main.tf: |
-      data "openstack_compute_availability_zones_v2" "osc-az" {}
-  
-      data "openstack_networking_network_v2" "existing" {
-        name  = var.vpc_name
-        count = length(data.openstack_networking_network_v2.existing)
-      }
-  
-      data "openstack_networking_subnet_v2" "existing" {
-        name  = var.subnet_name
-        count = length(data.openstack_networking_subnet_v2.existing)
-      }
-  
-      data "openstack_networking_secgroup_v2" "existing" {
-        name  = var.secgroup_name
-        count = length(data.openstack_networking_secgroup_v2.existing)
-      }
-  
-      locals {
-        availability_zone = var.availability_zone == "" ? data.openstack_compute_availability_zones_v2.osc-az.names[0] : var.availability_zone
-        admin_passwd      = var.admin_passwd == "" ? random_password.password.result : var.admin_passwd
-        vpc_id            = length(data.openstack_networking_network_v2.existing) > 0 ? data.openstack_networking_network_v2.existing[0].id : openstack_networking_network_v2.new[0].id
-        subnet_id         = length(data.openstack_networking_subnet_v2.existing) > 0 ? data.openstack_networking_subnet_v2.existing[0].id : openstack_networking_subnet_v2.new[0].id
-        secgroup_id       = length(data.openstack_networking_secgroup_v2.existing) > 0 ? data.openstack_networking_secgroup_v2.existing[0].id : openstack_networking_secgroup_v2.new[0].id
-        secgroup_name     = length(data.openstack_networking_secgroup_v2.existing) > 0 ? data.openstack_networking_secgroup_v2.existing[0].name : openstack_networking_secgroup_v2.new[0].name
-      }
-  
-      resource "openstack_networking_network_v2" "new" {
-        count = length(data.openstack_networking_network_v2.existing) == 0 ? 1 : 0
-        name  = "${var.vpc_name}-${random_id.new.hex}"
-      }
-  
-      resource "openstack_networking_subnet_v2" "new" {
-        count      = length(data.openstack_networking_subnet_v2.existing) == 0 ? 1 : 0
-        network_id     = local.vpc_id
-        name       = "${var.subnet_name}-${random_id.new.hex}"
-        cidr       = "192.168.10.0/24"
-        gateway_ip = "192.168.10.1"
-      }
-  
-      resource "openstack_networking_secgroup_v2" "new" {
-        count       = length(data.openstack_networking_secgroup_v2.existing) == 0 ? 1 : 0
-        name        = "${var.secgroup_name}-${random_id.new.hex}"
-        description = "Compute security group"
-      }
-  
-      resource "openstack_networking_secgroup_rule_v2" "secgroup_rule_0" {
-        count             = length(data.openstack_networking_secgroup_v2.existing) == 0 ? 1 : 0
-        direction         = "ingress"
-        ethertype         = "IPv4"
-        protocol          = "tcp"
-        port_range_min    = 22
-        port_range_max    = 22
-        remote_ip_prefix  = "121.37.117.211/32"
-        security_group_id = local.secgroup_id
-      }
-  
-      resource "openstack_networking_secgroup_rule_v2" "secgroup_rule_1" {
-        count             = length(data.openstack_networking_secgroup_v2.existing) == 0 ? 1 : 0
-        direction         = "ingress"
-        ethertype         = "IPv4"
-        protocol          = "tcp"
-        port_range_min    = 8080
-        port_range_max    = 8088
-        remote_ip_prefix  = "121.37.117.211/32"
-        security_group_id = local.secgroup_id
-      }
-  
-      resource "openstack_networking_secgroup_rule_v2" "secgroup_rule_2" {
-        count             = length(data.openstack_networking_secgroup_v2.existing) == 0 ? 1 : 0
-        direction         = "ingress"
-        ethertype         = "IPv4"
-        protocol          = "tcp"
-        port_range_min    = 9090
-        port_range_max    = 9099
-        remote_ip_prefix  = "121.37.117.211/32"
-        security_group_id = local.secgroup_id
-      }
-  
-      resource "random_id" "new" {
-        byte_length = 4
-      }
-  
-      resource "random_password" "password" {
-        length           = 12
-        upper            = true
-        lower            = true
-        numeric          = true
-        special          = true
-        min_special      = 1
-        override_special = "#%@"
-      }
-  
-      data "openstack_images_image_v2" "image" {
-        name                  = var.image_name
-        most_recent           = true
-      }
-  
-      resource "openstack_compute_instance_v2" "ecs-tf" {
-        availability_zone  = local.availability_zone
-        name               = "ecs-tf-${random_id.new.hex}"
-        flavor_name          = var.flavor_name
-        security_groups    = [ local.secgroup_name ]
-        image_id           = data.openstack_images_image_v2.image.id
-        admin_pass         = local.admin_passwd
-        network {
-          uuid = local.vpc_id
+        
+        provider "openstack" {
+          region = var.region
         }
-      }
-      
-      resource "openstack_blockstorage_volume_v3" "volume" {
-        name              = "volume-tf-${random_id.new.hex}"
-        description       = "my volume"
-        size              = 40
-        availability_zone = local.availability_zone
-      }
-      
-      resource "openstack_compute_volume_attach_v2" "attached" {
-        instance_id = openstack_compute_instance_v2.ecs-tf.id
-        volume_id   = openstack_blockstorage_volume_v3.volume.id
-      }
-  
-      output "ecs_host" {
-        value = openstack_compute_instance_v2.ecs-tf.access_ip_v4
-      }
-  
-      output "admin_passwd" {
-        value = var.admin_passwd == "" ? nonsensitive(local.admin_passwd) : local.admin_passwd
-      }
+
+      main.tf: |
+        data "openstack_compute_availability_zones_v2" "osc-az" {}
+    
+        data "openstack_networking_network_v2" "existing" {
+          name  = var.vpc_name
+          count = length(data.openstack_networking_network_v2.existing)
+        }
+    
+        data "openstack_networking_subnet_v2" "existing" {
+          name  = var.subnet_name
+          count = length(data.openstack_networking_subnet_v2.existing)
+        }
+    
+        data "openstack_networking_secgroup_v2" "existing" {
+          name  = var.secgroup_name
+          count = length(data.openstack_networking_secgroup_v2.existing)
+        }
+    
+        locals {
+          availability_zone = var.availability_zone == "" ? data.openstack_compute_availability_zones_v2.osc-az.names[0] : var.availability_zone
+          admin_passwd      = var.admin_passwd == "" ? random_password.password.result : var.admin_passwd
+          vpc_id            = length(data.openstack_networking_network_v2.existing) > 0 ? data.openstack_networking_network_v2.existing[0].id : openstack_networking_network_v2.new[0].id
+          subnet_id         = length(data.openstack_networking_subnet_v2.existing) > 0 ? data.openstack_networking_subnet_v2.existing[0].id : openstack_networking_subnet_v2.new[0].id
+          secgroup_id       = length(data.openstack_networking_secgroup_v2.existing) > 0 ? data.openstack_networking_secgroup_v2.existing[0].id : openstack_networking_secgroup_v2.new[0].id
+          secgroup_name     = length(data.openstack_networking_secgroup_v2.existing) > 0 ? data.openstack_networking_secgroup_v2.existing[0].name : openstack_networking_secgroup_v2.new[0].name
+        }
+    
+        resource "openstack_networking_network_v2" "new" {
+          count = length(data.openstack_networking_network_v2.existing) == 0 ? 1 : 0
+          name  = "${var.vpc_name}-${random_id.new.hex}"
+        }
+    
+        resource "openstack_networking_subnet_v2" "new" {
+          count      = length(data.openstack_networking_subnet_v2.existing) == 0 ? 1 : 0
+          network_id     = local.vpc_id
+          name       = "${var.subnet_name}-${random_id.new.hex}"
+          cidr       = "192.168.10.0/24"
+          gateway_ip = "192.168.10.1"
+        }
+    
+        resource "openstack_networking_secgroup_v2" "new" {
+          count       = length(data.openstack_networking_secgroup_v2.existing) == 0 ? 1 : 0
+          name        = "${var.secgroup_name}-${random_id.new.hex}"
+          description = "Compute security group"
+        }
+    
+        resource "openstack_networking_secgroup_rule_v2" "secgroup_rule_0" {
+          count             = length(data.openstack_networking_secgroup_v2.existing) == 0 ? 1 : 0
+          direction         = "ingress"
+          ethertype         = "IPv4"
+          protocol          = "tcp"
+          port_range_min    = 22
+          port_range_max    = 22
+          remote_ip_prefix  = "121.37.117.211/32"
+          security_group_id = local.secgroup_id
+        }
+    
+        resource "openstack_networking_secgroup_rule_v2" "secgroup_rule_1" {
+          count             = length(data.openstack_networking_secgroup_v2.existing) == 0 ? 1 : 0
+          direction         = "ingress"
+          ethertype         = "IPv4"
+          protocol          = "tcp"
+          port_range_min    = 8080
+          port_range_max    = 8088
+          remote_ip_prefix  = "121.37.117.211/32"
+          security_group_id = local.secgroup_id
+        }
+    
+        resource "openstack_networking_secgroup_rule_v2" "secgroup_rule_2" {
+          count             = length(data.openstack_networking_secgroup_v2.existing) == 0 ? 1 : 0
+          direction         = "ingress"
+          ethertype         = "IPv4"
+          protocol          = "tcp"
+          port_range_min    = 9090
+          port_range_max    = 9099
+          remote_ip_prefix  = "121.37.117.211/32"
+          security_group_id = local.secgroup_id
+        }
+    
+        resource "random_id" "new" {
+          byte_length = 4
+        }
+    
+        resource "random_password" "password" {
+          length           = 12
+          upper            = true
+          lower            = true
+          numeric          = true
+          special          = true
+          min_special      = 1
+          override_special = "#%@"
+        }
+    
+        data "openstack_images_image_v2" "image" {
+          name                  = var.image_name
+          most_recent           = true
+        }
+    
+        resource "openstack_compute_instance_v2" "ecs-tf" {
+          availability_zone  = local.availability_zone
+          name               = "ecs-tf-${random_id.new.hex}"
+          flavor_name          = var.flavor_name
+          security_groups    = [ local.secgroup_name ]
+          image_id           = data.openstack_images_image_v2.image.id
+          admin_pass         = local.admin_passwd
+          network {
+            uuid = local.vpc_id
+          }
+        }
+        
+        resource "openstack_blockstorage_volume_v3" "volume" {
+          name              = "volume-tf-${random_id.new.hex}"
+          description       = "my volume"
+          size              = 40
+          availability_zone = local.availability_zone
+        }
+        
+        resource "openstack_compute_volume_attach_v2" "attached" {
+          instance_id = openstack_compute_instance_v2.ecs-tf.id
+          volume_id   = openstack_blockstorage_volume_v3.volume.id
+        }
+    
+        output "ecs_host" {
+          value = openstack_compute_instance_v2.ecs-tf.access_ip_v4
+        }
+    
+        output "admin_passwd" {
+          value = var.admin_passwd == "" ? nonsensitive(local.admin_passwd) : local.admin_passwd
+        }
