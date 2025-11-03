@@ -348,6 +348,8 @@ eula: |
   8. Violate or adversely affect the security or integrity of the Services, hardware, software, systems, websites or networks;
   9. Distribute, disseminate or send unsolicited email, bulk email or other messages, promotions, advertising or solicitations (such as "spam");
   10. Fraudulent offers of goods or services, or any advertising, promotional or other materials containing false, deceptive or misleading statements.
+resourceStateManage:
+  isResourceStateControllable: true
 deployment:
   deployerTool:
     # kind, Supported values are terraform, opentofu.

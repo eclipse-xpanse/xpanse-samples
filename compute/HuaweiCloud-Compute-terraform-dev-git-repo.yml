@@ -329,6 +329,8 @@ flavors:
 # The contact details of the service.
 serviceProviderContactDetails:
   emails: [ "test@test.com" ]
+resourceStateManage:
+  isResourceStateControllable: true
 deployment:
   deployerTool:
     # kind, Supported values are terraform, opentofu.
