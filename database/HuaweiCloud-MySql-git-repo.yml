@@ -420,6 +420,8 @@ serviceObjects:
             valueSchema: null
             sensitiveScope: none # store encrypted in xpanse DB.
             isMandatory: true
+resourceStateManage:
+  isResourceStateControllable: true
 deployment:
   deployerTool:
     # kind, Supported values are terraform, opentofu.

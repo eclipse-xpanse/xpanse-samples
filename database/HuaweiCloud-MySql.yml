@@ -309,7 +309,6 @@ serviceObjects:
       valueSchema: "" #optional
     handlerType: ansible
     objectsManage:
-      # Should be the name available in the deployer script
       - objectActionType: create
         modificationImpact:
           isDataLost: false
@@ -420,6 +419,8 @@ serviceObjects:
             valueSchema: null
             sensitiveScope: none # store encrypted in xpanse DB.
             isMandatory: true
+resourceStateManage:
+  isResourceStateControllable: true
 deployment:
   deployerTool:
     # kind, Supported values are terraform, opentofu.
